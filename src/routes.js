@@ -3,6 +3,7 @@ import fs from 'fs';
 import morgan from 'morgan';
 import path from 'path';
 import {
+  logFormatter,
   requestFromQueryMiddleware,
   respondWithJSON,
   respondWithXML,
@@ -12,10 +13,14 @@ import {
 const LOG_PATH = path.join(__dirname, 'requests.log');
 const router = express.Router();
 
-// only log valid req/res cycles
+/**
+ * Log all request that goes in and actually come out with a 200 response
+ * on this endpoint
+ */
 router.use(
-  morgan(':method\t\t:url\t\t:status\t\t:response-time ms', {
+  morgan(logFormatter, {
     skip(req, res) {
+      // only log valid req/res cycles
       return res.statusCode > 200;
     },
     stream: fs.createWriteStream(LOG_PATH, {

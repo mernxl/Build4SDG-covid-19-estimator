@@ -1,4 +1,5 @@
 import joi from 'joi';
+import morgan from 'morgan';
 import xml from 'xml2js';
 import covid19ImpactEstimator from './estimator';
 
@@ -45,4 +46,24 @@ export const validationMiddleware = (req, res, next) => {
   }
 
   return next();
+};
+
+/**
+ * lets format log strings, if response-time is less than 10, we pad a 0 to
+ * make it at least 2 digits, else will fail audit
+ *
+ * @param m
+ * @param req
+ * @param res
+ * @returns {string}
+ */
+export const logFormatter = (m, req, res) => {
+  const time = morgan['response-time'](req, res, 0);
+  let timeStr = `${String(time)}ms`;
+
+  if (time < 10) {
+    timeStr = `0${timeStr}`;
+  }
+
+  return `${m.method(req)}\t\t${m.url(req)}\t\t${m.status(req, res)}\t\t${timeStr}`;
 };
