@@ -42,9 +42,9 @@ router.get(
   respondWithJSON
 );
 
-// responds with a prompt to download logs
+// respond with the logs file
 router.get('/logs', async (req, res) => {
-  res.download(LOG_PATH, 'requests.logs');
+  res.sendFile(LOG_PATH);
 });
 
 export default router;
